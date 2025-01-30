@@ -16,9 +16,17 @@ python -m venv venv
 
 # Instalar dependencias
 pip install -r requirements.txt
+```
 
+### 3. Arrancar el proyecto:
+
+```bash
 # Configurar entorno para TensorFlow (Windows PowerShell)
 $env:TF_ENABLE_ONEDNN_OPTS=0
+
+# Arrancar el proyecto
+cd .\api\
+flask --app app run --debug
 ```
 
 ## Modelo
