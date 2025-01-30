@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificador de Flores Iris</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F0F7FF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 1rem;
+            overflow: hidden;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        h1 {
+            color: #003B80;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #003B80;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #45B7D1;
+            border-radius: 5px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #45B7D1;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #003B80;
+        }
+
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 5px;
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease-out;
+        }
+
+        .result.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .success {
+            background-color: #4ECDC4;
+            color: #003B80;
+        }
+
+        .error {
+            background-color: #FF6B6B;
+            color: #FFFFFF;
+        }
+
+        .probabilities {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #E3F2FD;
+            border-left: 4px solid #45B7D1;
+            border-radius: 5px;
+            color: #003B80;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Clasificador de Flores Iris</h1>
+        
+        <form id="irisForm">
+            <div class="form-group">
+                <label for="sepal_length">Longitud del Sépalo (cm):</label>
+                <input type="number" step="0.1" id="sepal_length" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="sepal_width">Ancho del Sépalo (cm):</label>
+                <input type="number" step="0.1" id="sepal_width" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="petal_length">Longitud del Pétalo (cm):</label>
+                <input type="number" step="0.1" id="petal_length" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="petal_width">Ancho del Pétalo (cm):</label>
+                <input type="number" step="0.1" id="petal_width" required>
+            </div>
+            
+            <button type="submit">Clasificar Flor</button>
+        </form>
+        
+        <div class="result success">
+            <h3>Resultado:</h3>
+            <p>Especie predicha: <span id="predictedSpecies" style="text-transform: capitalize;"></span></p>
+            <div class="probabilities">
+                <h4>Probabilidades:</h4>
+                <p>Setosa: <span id="probSetosa"></span>%</p>
+                <p>Versicolor: <span id="probVersicolor"></span>%</p>
+                <p>Virginica: <span id="probVirginica"></span>%</p>
+            </div>
+        </div>
+        
+        <div class="result error">
+            <p id="errorMessage"></p>
+        </div>
+    </div>
+
+    <script>
+        // 1. Selección de elementos
+        const form = document.getElementById('irisForm');
+        const successResult = document.querySelector('.result.success');
+        const errorResult = document.querySelector('.result.error');
+
+        // 2. Event listener para el formulario
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();  // Evita recarga de página
+            
+            // 3. Recoger datos del formulario
+            const data = {
+                sepal_length: parseFloat(document.getElementById('sepal_length').value),
+                sepal_width: parseFloat(document.getElementById('sepal_width').value),
+                petal_length: parseFloat(document.getElementById('petal_length').value),
+                petal_width: parseFloat(document.getElementById('petal_width').value)
+            };
+
+            try {
+                // 4. Enviar petición a la API
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+
+                // 5. Procesar respuesta
+                const result = await response.json();
+
+                if(response.ok) {
+                    // 6. Mostrar resultados exitosos
+                    successResult.style.display = 'block';
+                    errorResult.style.display = 'none';
+                    
+                    document.getElementById('predictedSpecies').textContent = result.species;
+                    document.getElementById('probSetosa').textContent = (result.probabilities.setosa * 100).toFixed(2);
+                    document.getElementById('probVersicolor').textContent = (result.probabilities.versicolor * 100).toFixed(2);
+                    document.getElementById('probVirginica').textContent = (result.probabilities.virginica * 100).toFixed(2);
+                    
+                    // Animación (nuevo)
+                    setTimeout(() => successResult.classList.add('visible'), 10);
+                } else {
+                    throw new Error(result.error || 'Error desconocido');
+                }
+            } catch (error) {
+                // 7. Manejar errores
+                successResult.style.display = 'none';
+                errorResult.style.display = 'block';
+                document.getElementById('errorMessage').textContent = `Error: ${error.message}`;
+                
+                // Animación para errores (nuevo)
+                setTimeout(() => errorResult.classList.add('visible'), 10);
+            }
+        });
+    </script>
+</body>
+</html>

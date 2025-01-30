@@ -1,0 +1,94 @@
+{
+	"info": {
+		"_postman_id": "479c2198-b3f1-4eb8-9d92-c15dd996dab3",
+		"name": "Flores API Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32678298"
+	},
+	"item": [
+		{
+			"name": "Health check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/hc",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"hc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Predict válido",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sepal_length\": 5,\r\n    \"sepal_width\": 2,\r\n    \"petal_length\": 3,\r\n    \"petal_width\": 1\r\n}\r\n// {\r\n//     \"sepal_width\": 2,\r\n//     \"petal_length\": 3,\r\n//     \"petal_width\": 1\r\n// }\r\n// {\r\n//     \"sepal_length\": 5,\r\n//     \"sepal_width\": 2,\r\n//     \"petal_length\": \"a\",\r\n//     \"petal_width\": 1\r\n// }\r\n// {\r\n//     \"sepal_length\": 5,\r\n//     \"sepal_width\": \"3\",\r\n//     \"petal_length\": 3,\r\n//     \"petal_width\": 1\r\n// }\r\n// {\r\n//     \"sepal_length\": 5,\r\n//     \"sepal_width\": 2,\r\n//     \"petal_length\": 3,\r\n//     \"petal_width\": -1\r\n// }\r\n// {}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/predict",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"predict"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Predict inválido",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sepal_length\": \"cinco\",\r\n    \"sepal_width\": 2,\r\n    \"petal_length\": 3,\r\n    \"petal_width\": 1\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/predict",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"predict"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
